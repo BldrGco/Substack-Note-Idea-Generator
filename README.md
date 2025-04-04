@@ -1,0 +1,1 @@
+# Substack-Note-Idea-Generator
