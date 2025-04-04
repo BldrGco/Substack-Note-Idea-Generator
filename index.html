@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Substack Note Idea Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #FF6719;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #FF6719;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #E55000;
+        }
+        #loading {
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+        .idea-card {
+            background-color: #fff;
+            border-left: 4px solid #FF6719;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .idea-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .copy-btn {
+            background-color: #eee;
+            color: #333;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            width: auto;
+            float: right;
+        }
+        .copy-btn:hover {
+            background-color: #ddd;
+        }
+        #results {
+            margin-top: 30px;
+            display: none;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 103, 25, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #FF6719;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Substack Note Idea Generator</h1>
+        
+        <div class="form-group">
+            <label for="topic">1. What topic do you want to talk about? (short sentence)</label>
+            <input type="text" id="topic" placeholder="e.g., The future of remote work">
+        </div>
+        
+        <div class="form-group">
+            <label for="structure">2. What structure do you want your note to have? (3 words only)</label>
+            <input type="text" id="structure" placeholder="e.g., short, punchy, meaningful">
+        </div>
+        
+        <button id="generate-btn">Generate 3 Substack Note Ideas</button>
+        
+        <div id="loading">
+            <div class="spinner"></div>
+            <p>Generating creative ideas...</p>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        document.getElementById('generate-btn').addEventListener('click', generateIdeas);
+        
+        function generateIdeas() {
+            const topic = document.getElementById('topic').value.trim();
+            const structure = document.getElementById('structure').value.trim();
+            
+            if (!topic) {
+                alert('Please enter a topic');
+                return;
+            }
+            
+            if (!structure) {
+                alert('Please enter 3 structure words');
+                return;
+            }
+            
+            const structureWords = structure.split(',').map(word => word.trim());
+            if (structureWords.length > 3) {
+                alert('Please use only 3 words for structure');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                const ideas = createIdeas(topic, structure);
+                displayResults(ideas);
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+            }, 1500);
+        }
+        
+        function createIdeas(topic, structure) {
+            const structureArr = structure.split(',').map(word => word.trim());
+            
+            // This function simulates what would typically be an API call to an AI service
+            // Instead, we're using predefined templates and randomization
+            
+            const templates = [
+                {
+                    title: `${getRandomPrefix()} ${topic}`,
+                    content: generateContent(topic, structureArr, 1)
+                },
+                {
+                    title: `${topic}: ${getRandomMiddle()}`,
+                    content: generateContent(topic, structureArr, 2)
+                },
+                {
+                    title: `${getRandomQuestion()} ${topic}?`,
+                    content: generateContent(topic, structureArr, 3)
+                }
+            ];
+            
+            return templates;
+        }
+        
+        function getRandomPrefix() {
+            const prefixes = [
+                "Why", "How", "The Truth About", "Rethinking", "Beyond", 
+                "The Future of", "Unpacking", "Exploring", "The Hidden Side of",
+                "Debunking Myths About", "The Evolution of", "What Nobody Tells You About"
+            ];
+            return prefixes[Math.floor(Math.random() * prefixes.length)];
+        }
+        
+        function getRandomMiddle() {
+            const middles = [
+                "What You Need to Know", "A Fresh Perspective", "The Inside Story",
+                "A Deep Dive", "A New Approach", "The Untold Truth", "Breaking It Down",
+                "The Essential Guide", "My Personal Journey", "What's Next", "The Big Picture"
+            ];
+            return middles[Math.floor(Math.random() * middles.length)];
+        }
+        
+        function getRandomQuestion() {
+            const questions = [
+                "What's Really Happening with", "Who's Benefiting from", "Where Is",
+                "How Can We Improve", "When Should We Reconsider", "Why Does Everyone Misunderstand",
+                "What's the Real Impact of", "Is It Time to Rethink", "Can We Really Trust"
+            ];
+            return questions[Math.floor(Math.random() * questions.length)];
+        }
+        
+        function generateContent(topic, structure, variant) {
+            // Generate unique content based on topic, structure, and a variant number
+            const topicWords = topic.split(' ');
+            const keyTopic = topicWords[topicWords.length - 1];
+            
+            // Get structure qualities
+            const quality1 = structure[0] || "insightful";
+            const quality2 = structure[1] || "concise";
+            const quality3 = structure[2] || "actionable";
+            
+            const intros = [
+                `A ${quality1} look at ${topic} that breaks down what's really happening.`,
+                `The ${quality2} truth about ${topic} that nobody is talking about.`,
+                `My ${quality3} thoughts on ${topic} after years of observation.`
+            ];
+            
+            const middles = [
+                `I've been following ${topic} closely, and here's what I've learned:`,
+                `Three key insights about ${topic} that might surprise you:`,
+                `What makes ${topic} so important right now:`
+            ];
+            
+            const endings = [
+                `Join the conversation on ${topic} - I'd love to hear your thoughts.`,
+                `What's your take on ${topic}? Reply to share your perspective.`,
+                `Let me know if this ${quality1} perspective on ${topic} resonates with you.`
+            ];
+            
+            return `${intros[variant - 1]}\n\n${middles[variant - 1]}\n\n• The ${quality1} nature of ${keyTopic} is often misunderstood\n• Why being ${quality2} about ${keyTopic} matters more than ever\n• How to approach ${keyTopic} in a more ${quality3} way\n\n${endings[variant - 1]}`;
+        }
+        
+        function displayResults(ideas) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>Your Substack Note Ideas:</h2>';
+            
+            ideas.forEach((idea, index) => {
+                const card = document.createElement('div');
+                card.className = 'idea-card';
+                
+                const formattedContent = idea.content.replace(/\n\n/g, '<br><br>').replace(/\n•/g, '<br>•');
+                
+                card.innerHTML = `
+                    <div class="idea-title">Idea ${index + 1}: ${idea.title}</div>
+                    <p>${formattedContent}</p>
+                    <button class="copy-btn" onclick="copyToClipboard(${index})">Copy to Clipboard</button>
+                    <div style="clear: both;"></div>
+                `;
+                
+                resultsDiv.appendChild(card);
+            });
+            
+            // Store ideas in window for copy function
+            window.generatedIdeas = ideas;
+        }
+        
+        function copyToClipboard(index) {
+            const idea = window.generatedIdeas[index];
+            const textToCopy = `${idea.title}\n\n${idea.content}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const buttons = document.querySelectorAll('.copy-btn');
+                buttons[index].textContent = 'Copied!';
+                
+                setTimeout(() => {
+                    buttons[index].textContent = 'Copy to Clipboard';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
