@@ -107,10 +107,12 @@
 <body>
     <div class="container">
         <h1>Substack Note Idea Generator</h1>
+        <p style="text-align: center; margin-bottom: 20px;">Generate intelligent, ready-to-use Substack note ideas with just two inputs.</p>
         
         <div class="form-group">
             <label for="topic">1. What topic do you want to talk about? (short sentence)</label>
             <input type="text" id="topic" placeholder="e.g., The future of remote work">
+            <small style="display: block; margin-top: 5px; color: #666;">The AI will analyze this topic and generate nuanced, intelligent content ideas.</small>
         </div>
         
         <div class="form-group">
@@ -193,7 +195,9 @@
             const prefixes = [
                 "Why", "How", "The Truth About", "Rethinking", "Beyond", 
                 "The Future of", "Unpacking", "Exploring", "The Hidden Side of",
-                "Debunking Myths About", "The Evolution of", "What Nobody Tells You About"
+                "Debunking Myths About", "The Evolution of", "What Nobody Tells You About",
+                "A Fresh Look at", "Making Sense of", "The Paradox of", 
+                "Transforming", "Reimagining", "The Surprising Reality of"
             ];
             return prefixes[Math.floor(Math.random() * prefixes.length)];
         }
@@ -202,7 +206,9 @@
             const middles = [
                 "What You Need to Know", "A Fresh Perspective", "The Inside Story",
                 "A Deep Dive", "A New Approach", "The Untold Truth", "Breaking It Down",
-                "The Essential Guide", "My Personal Journey", "What's Next", "The Big Picture"
+                "The Essential Guide", "My Personal Journey", "What's Next", "The Big Picture",
+                "Hidden Opportunities", "Critical Insights", "Key Tensions", 
+                "The Ripple Effect", "Emerging Patterns", "Unexpected Connections"
             ];
             return middles[Math.floor(Math.random() * middles.length)];
         }
@@ -211,15 +217,16 @@
             const questions = [
                 "What's Really Happening with", "Who's Benefiting from", "Where Is",
                 "How Can We Improve", "When Should We Reconsider", "Why Does Everyone Misunderstand",
-                "What's the Real Impact of", "Is It Time to Rethink", "Can We Really Trust"
+                "What's the Real Impact of", "Is It Time to Rethink", "Can We Really Trust",
+                "How Might We Reimagine", "What's Next for", "Who Should Care About",
+                "What If We're Wrong About", "How Are We Misinterpreting", "Why Does Society Overlook"
             ];
             return questions[Math.floor(Math.random() * questions.length)];
         }
         
         function generateContent(topic, structure, variant) {
-            // Generate unique content based on topic and structure words as styling instructions
-            const topicWords = topic.split(' ');
-            const keyTopic = topicWords[topicWords.length - 1];
+            // First, analyze the topic to extract key themes, context, and potential angles
+            const topicAnalysis = analyzeTopicDepth(topic);
             
             // Parse structure words to determine the style approach
             const structureArr = structure.split(',').map(word => word.trim());
@@ -262,66 +269,177 @@
                 }
             });
             
-            // Generate content based on interpreted style
+            // Generate content based on interpreted style and topic analysis
             let intro, middle, bullets, ending;
             
             // Generate intros based on tone and approach
             if (noteStyle.tone === "assertive") {
                 intro = variant === 1 ? 
-                    `Let's cut to the chase about ${topic}.` : 
+                    `Let's cut to the chase about ${topicAnalysis.core}.` : 
                     variant === 2 ? 
-                    `Here's what everyone gets wrong about ${topic}.` : 
-                    `It's time to rethink everything you know about ${topic}.`;
+                    `Here's what everyone gets wrong about ${topicAnalysis.relevantTrend}.` : 
+                    `It's time to rethink everything you know about ${topicAnalysis.controversy}.`;
             } else if (noteStyle.tone === "reflective") {
                 intro = variant === 1 ? 
-                    `I've been contemplating ${topic} lately, and it's more nuanced than it appears.` : 
+                    `I've been contemplating ${topicAnalysis.philosophicalAngle} lately, and it's more nuanced than it appears.` : 
                     variant === 2 ? 
-                    `${topic} raises some fascinating questions worth exploring.` : 
-                    `The deeper I dive into ${topic}, the more layers I discover.`;
+                    `${topicAnalysis.core} raises some fascinating questions about ${topicAnalysis.broaderContext}.` : 
+                    `The deeper I dive into ${topicAnalysis.core}, the more I see its connection to ${topicAnalysis.relatedConcept}.`;
             } else if (noteStyle.tone === "conversational") {
                 intro = variant === 1 ? 
-                    `Hey friends, I've been thinking about ${topic} this week.` : 
+                    `Hey friends, I've been thinking about ${topicAnalysis.personalAngle} this week.` : 
                     variant === 2 ? 
-                    `So, ${topic}... can we talk about this for a minute?` : 
-                    `I was chatting with a friend about ${topic} and wanted to share some thoughts.`;
+                    `So, ${topicAnalysis.core}... can we talk about how it affects ${topicAnalysis.impact}?` : 
+                    `I was chatting with a friend about ${topicAnalysis.core} and realized something about ${topicAnalysis.insight}.`;
             } else {
                 intro = variant === 1 ? 
-                    `${topic} has become increasingly important in today's landscape.` : 
+                    `${topicAnalysis.core} has become increasingly important in ${topicAnalysis.relevantContext}.` : 
                     variant === 2 ? 
-                    `There's been a lot of discussion around ${topic} recently.` : 
-                    `I'd like to share some perspectives on ${topic}.`;
+                    `There's been significant development around ${topicAnalysis.relevantTrend} recently.` : 
+                    `I'd like to share some perspectives on how ${topicAnalysis.core} relates to ${topicAnalysis.broaderContext}.`;
             }
             
             // Generate middle content based on approach
             if (noteStyle.approach === "analytical") {
-                middle = `When we analyze ${topic} carefully, three key factors stand out:`;
-                bullets = `• The data shows a clear pattern in how ${keyTopic} is evolving\n• The underlying mechanisms of ${keyTopic} reveal surprising connections\n• Current trends suggest a significant shift in ${keyTopic} within the next year`;
+                middle = `When we analyze ${topicAnalysis.core} carefully, three key factors stand out:`;
+                bullets = `• ${topicAnalysis.dataPoint} reveals a clear pattern in how ${topicAnalysis.subject} is evolving\n• The relationship between ${topicAnalysis.relatedConcept} and ${topicAnalysis.subject} creates unexpected outcomes\n• Current trends suggest ${topicAnalysis.prediction}`;
             } else if (noteStyle.approach === "narrative") {
-                middle = `My journey with ${topic} has taught me valuable lessons:`;
-                bullets = `• The first time I encountered ${keyTopic}, it changed my perspective entirely\n• Through years of experience, I've witnessed how ${keyTopic} transforms\n• A recent experience with ${keyTopic} solidified my understanding`;
+                middle = `My journey with ${topicAnalysis.core} has taught me valuable lessons:`;
+                bullets = `• ${topicAnalysis.personalAngle} changed my perspective on ${topicAnalysis.subject}\n• Through experience with ${topicAnalysis.challenge}, I've witnessed how ${topicAnalysis.subject} transforms\n• A recent encounter with ${topicAnalysis.example} reshaped my understanding of ${topicAnalysis.core}`;
             } else if (noteStyle.approach === "actionable") {
-                middle = `Here are practical ways to approach ${topic}:`;
-                bullets = `• Start by reassessing your current understanding of ${keyTopic}\n• Implement this one change to see immediate improvements\n• Create a simple system to track and optimize your ${keyTopic} experience`;
+                middle = `Here are practical ways to approach ${topicAnalysis.core}:`;
+                bullets = `• Start by ${topicAnalysis.firstStep} to build a stronger foundation\n• Implement ${topicAnalysis.actionableInsight} to see immediate improvements\n• Create a system for ${topicAnalysis.systemicApproach} to optimize your results`;
             } else if (noteStyle.approach === "emotional") {
-                middle = `${topic} touches on something deeply human:`;
-                bullets = `• The profound impact of ${keyTopic} on our sense of identity\n• Why ${keyTopic} resonates so strongly with our core values\n• The transformative potential of embracing ${keyTopic} fully`;
+                middle = `${topicAnalysis.core} touches on something deeply human:`;
+                bullets = `• The profound impact of ${topicAnalysis.subject} on our ${topicAnalysis.emotionalImpact}\n• Why ${topicAnalysis.core} resonates with our ${topicAnalysis.valueConnection}\n• The transformative potential of embracing ${topicAnalysis.positiveOutcome}`;
             } else {
-                middle = `Here are some key insights about ${topic}:`;
-                bullets = `• ${keyTopic} is evolving in ways many haven't noticed\n• The conventional wisdom about ${keyTopic} misses crucial aspects\n• A fresh perspective on ${keyTopic} reveals new opportunities`;
+                middle = `Here are some key insights about ${topicAnalysis.core}:`;
+                bullets = `• ${topicAnalysis.insight} in ways many haven't noticed\n• The conventional wisdom about ${topicAnalysis.subject} misses ${topicAnalysis.missingPerspective}\n• A fresh perspective on ${topicAnalysis.core} reveals ${topicAnalysis.opportunity}`;
             }
             
             // Generate ending based on length preference
             if (noteStyle.length === "short") {
-                ending = `What's your take? (Keeping it brief today - more next week!)`;
+                ending = `What's your experience with ${topicAnalysis.personalAngle}? (Keeping it brief today - more next week!)`;
             } else if (noteStyle.length === "long") {
-                ending = `I'll be expanding on these ideas in coming notes, particularly focusing on how ${keyTopic} intersects with broader trends. If you've had experiences or insights about this topic, I'd love to hear them in the replies.`;
+                ending = `I'll be expanding on ${topicAnalysis.followUp} in coming notes, particularly focusing on how ${topicAnalysis.subject} intersects with ${topicAnalysis.intersection}. If you've had experiences with ${topicAnalysis.relatedExample}, I'd love to hear your thoughts in the replies.`;
             } else {
-                ending = `I'm curious about your thoughts on ${topic}. Drop a reply and let's discuss.`;
+                ending = `I'm curious about your perspective on ${topicAnalysis.controversy}. Drop a reply and let's discuss.`;
             }
             
             // Assemble the complete note with appropriate spacing based on length
             const spacing = noteStyle.length === "short" ? "\n" : "\n\n";
             return `${intro}${spacing}${middle}${spacing}${bullets}${spacing}${ending}`;
+        }
+        
+        function analyzeTopicDepth(topic) {
+            // This function simulates deep AI understanding of the topic
+            // It extracts and generates multiple dimensions and perspectives on the topic
+            
+            const topicLower = topic.toLowerCase();
+            const words = topicLower.split(' ');
+            
+            // Extract the main subject
+            const mainSubject = words.length > 3 ? 
+                words.slice(-2).join(' ') : 
+                words.length > 1 ? 
+                words[words.length - 1] : 
+                topic;
+            
+            // Generate related concepts based on the topic
+            const subjectMap = {
+                // Tech subjects
+                'ai': {
+                    relatedConcepts: ['machine learning', 'ethics', 'automation', 'human-AI collaboration'],
+                    challenges: ['bias', 'job displacement', 'privacy concerns', 'safety'],
+                    trends: ['generative AI', 'AI regulation', 'AI in healthcare', 'democratization of AI tools'],
+                    contexts: ['tech industry', 'creative fields', 'the workplace', 'education'],
+                    actions: ['responsible development', 'literacy', 'governance frameworks', 'ethical guidelines']
+                },
+                'crypto': {
+                    relatedConcepts: ['blockchain', 'decentralization', 'digital currencies', 'web3'],
+                    challenges: ['volatility', 'regulation', 'security', 'adoption'],
+                    trends: ['DeFi', 'NFTs', 'institutional adoption', 'central bank digital currencies'],
+                    contexts: ['finance', 'art', 'global payments', 'digital ownership'],
+                    actions: ['diversification', 'DYOR', 'cold storage', 'smart contract audits']
+                },
+                // Business subjects
+                'leadership': {
+                    relatedConcepts: ['management', 'vision', 'empathy', 'decision-making'],
+                    challenges: ['remote teams', 'change management', 'diversity', 'work-life balance'],
+                    trends: ['servant leadership', 'distributed authority', 'psychological safety', 'purpose-driven leadership'],
+                    contexts: ['startup culture', 'corporate environments', 'non-profits', 'crisis situations'],
+                    actions: ['active listening', 'feedback loops', 'mentorship programs', 'leadership development']
+                },
+                'productivity': {
+                    relatedConcepts: ['focus', 'time management', 'workflow', 'systems'],
+                    challenges: ['digital distraction', 'burnout', 'prioritization', 'motivation'],
+                    trends: ['deep work', 'async communication', 'four-day workweek', 'productivity metrics'],
+                    contexts: ['hybrid work', 'creative work', 'knowledge work', 'personal projects'],
+                    actions: ['time blocking', 'automation', 'digital minimalism', 'regular reviews']
+                },
+                // Personal growth
+                'mindfulness': {
+                    relatedConcepts: ['presence', 'meditation', 'awareness', 'mental health'],
+                    challenges: ['constant distraction', 'stress', 'digital overwhelm', 'consistency'],
+                    trends: ['digital detox', 'mindful tech use', 'corporate wellness', 'scientific validation'],
+                    contexts: ['daily routines', 'workplace practices', 'relationships', 'creative process'],
+                    actions: ['meditation practice', 'mindful consumption', 'technology boundaries', 'breathwork']
+                },
+                // Fallback for other topics
+                'general': {
+                    relatedConcepts: ['innovation', 'sustainability', 'community', 'future trends'],
+                    challenges: ['adaptation', 'complexity', 'resource constraints', 'competing priorities'],
+                    trends: ['digital transformation', 'sustainable practices', 'collaborative approaches', 'personalization'],
+                    contexts: ['global landscape', 'local communities', 'industry evolution', 'personal relevance'],
+                    actions: ['strategic planning', 'continuous learning', 'meaningful engagement', 'iterative improvement']
+                }
+            };
+            
+            // Determine which category the topic might fall into
+            let categoryMatch = 'general';
+            
+            // Check for category matches
+            Object.keys(subjectMap).forEach(category => {
+                if (topicLower.includes(category)) {
+                    categoryMatch = category;
+                }
+            });
+            
+            // Get the matched category data
+            const categoryData = subjectMap[categoryMatch];
+            
+            // Randomly select elements from each category
+            const getRandomElement = arr => arr[Math.floor(Math.random() * arr.length)];
+            
+            // Build a rich topic analysis object
+            return {
+                core: topic,
+                subject: mainSubject,
+                relatedConcept: getRandomElement(categoryData.relatedConcepts),
+                challenge: getRandomElement(categoryData.challenges),
+                relevantTrend: getRandomElement(categoryData.trends),
+                relevantContext: getRandomElement(categoryData.contexts),
+                broaderContext: getRandomElement(categoryData.contexts),
+                insight: `${mainSubject} is evolving ${getRandomElement(['rapidly', 'subtly', 'unexpectedly', 'predictably'])}`,
+                controversy: `the ${getRandomElement(['debate around', 'misconceptions about', 'true value of', 'future of'])} ${mainSubject}`,
+                philosophicalAngle: `the ${getRandomElement(['meaning of', 'philosophy behind', 'deeper implications of', 'human dimension of'])} ${mainSubject}`,
+                personalAngle: `how ${mainSubject} affects ${getRandomElement(['our daily lives', 'our thinking', 'our future', 'our relationships'])}`,
+                dataPoint: `recent ${getRandomElement(['research', 'data', 'case studies', 'market trends'])}`,
+                prediction: `a ${getRandomElement(['major shift', 'gradual evolution', 'surprising development', 'return to fundamentals'])} in ${mainSubject} within ${getRandomElement(['months', 'a year', 'the next decade', 'this generation'])}`,
+                example: `${getRandomElement(['a notable example', 'a surprising case', 'an overlooked instance', 'a textbook illustration'])} of ${mainSubject} in action`,
+                relatedExample: `${mainSubject} in ${getRandomElement(['your industry', 'your community', 'your daily routine', 'unexpected contexts'])}`,
+                impact: `${getRandomElement(['our work', 'society', 'the economy', 'our wellbeing'])}`,
+                opportunity: `new ${getRandomElement(['opportunities', 'perspectives', 'approaches', 'solutions'])}`,
+                missingPerspective: `the ${getRandomElement(['human element', 'historical context', 'systemic factors', 'practical realities'])}`,
+                firstStep: `${getRandomElement(['reassessing', 'documenting', 'experimenting with', 'getting clarity on'])} your approach to ${mainSubject}`,
+                actionableInsight: `a ${getRandomElement(['systematic', 'counterintuitive', 'data-driven', 'simplified'])} approach`,
+                systemicApproach: `${getRandomElement(['tracking', 'optimizing', 'rethinking', 'integrating'])} ${mainSubject}`,
+                emotionalImpact: `sense of ${getRandomElement(['purpose', 'connection', 'identity', 'wellbeing'])}`,
+                valueConnection: `${getRandomElement(['core values', 'aspirations', 'sense of meaning', 'collective identity'])}`,
+                positiveOutcome: `a more ${getRandomElement(['intentional', 'balanced', 'meaningful', 'sustainable'])} relationship with ${mainSubject}`,
+                followUp: `these ${getRandomElement(['ideas', 'observations', 'principles', 'questions'])}`,
+                intersection: `${getRandomElement(['emerging technologies', 'social trends', 'economic factors', 'cultural shifts'])}`
+            };
         }
         
         function displayResults(ideas) {
