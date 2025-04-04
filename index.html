@@ -116,6 +116,7 @@
         <div class="form-group">
             <label for="structure">2. What structure do you want your note to have? (3 words only)</label>
             <input type="text" id="structure" placeholder="e.g., short, punchy, meaningful">
+            <small style="display: block; margin-top: 5px; color: #666;">These words will guide the tone, structure and format of your notes.</small>
         </div>
         
         <button id="generate-btn">Generate 3 Substack Note Ideas</button>
@@ -147,7 +148,7 @@
             
             const structureWords = structure.split(',').map(word => word.trim());
             if (structureWords.length > 3) {
-                alert('Please use only 3 words for structure');
+                alert('Please use only up to 3 words for structure');
                 return;
             }
             
@@ -167,23 +168,21 @@
         }
         
         function createIdeas(topic, structure) {
-            const structureArr = structure.split(',').map(word => word.trim());
-            
             // This function simulates what would typically be an API call to an AI service
-            // Instead, we're using predefined templates and randomization
+            // Instead, we're using predefined templates and randomization that interprets the structure words
             
             const templates = [
                 {
                     title: `${getRandomPrefix()} ${topic}`,
-                    content: generateContent(topic, structureArr, 1)
+                    content: generateContent(topic, structure, 1)
                 },
                 {
                     title: `${topic}: ${getRandomMiddle()}`,
-                    content: generateContent(topic, structureArr, 2)
+                    content: generateContent(topic, structure, 2)
                 },
                 {
                     title: `${getRandomQuestion()} ${topic}?`,
-                    content: generateContent(topic, structureArr, 3)
+                    content: generateContent(topic, structure, 3)
                 }
             ];
             
@@ -218,34 +217,111 @@
         }
         
         function generateContent(topic, structure, variant) {
-            // Generate unique content based on topic, structure, and a variant number
+            // Generate unique content based on topic and structure words as styling instructions
             const topicWords = topic.split(' ');
             const keyTopic = topicWords[topicWords.length - 1];
             
-            // Get structure qualities
-            const quality1 = structure[0] || "insightful";
-            const quality2 = structure[1] || "concise";
-            const quality3 = structure[2] || "actionable";
+            // Parse structure words to determine the style approach
+            const structureArr = structure.split(',').map(word => word.trim());
+            const styleWords = structureArr.length > 0 ? structureArr : ["insightful", "concise", "actionable"];
             
-            const intros = [
-                `A ${quality1} look at ${topic} that breaks down what's really happening.`,
-                `The ${quality2} truth about ${topic} that nobody is talking about.`,
-                `My ${quality3} thoughts on ${topic} after years of observation.`
-            ];
+            // Interpret the style words to create different note structures
+            let noteStyle = {
+                tone: "neutral",
+                length: "medium",
+                approach: "informative"
+            };
             
-            const middles = [
-                `I've been following ${topic} closely, and here's what I've learned:`,
-                `Three key insights about ${topic} that might surprise you:`,
-                `What makes ${topic} so important right now:`
-            ];
+            // Analyze style words to determine the approach
+            styleWords.forEach(word => {
+                // Tone-related words
+                if (["punchy", "bold", "provocative", "passionate", "fiery", "strong"].includes(word.toLowerCase())) {
+                    noteStyle.tone = "assertive";
+                } else if (["thoughtful", "reflective", "deep", "nuanced", "philosophical"].includes(word.toLowerCase())) {
+                    noteStyle.tone = "reflective";
+                } else if (["friendly", "conversational", "warm", "casual", "personal"].includes(word.toLowerCase())) {
+                    noteStyle.tone = "conversational";
+                }
+                
+                // Length-related words
+                if (["short", "brief", "concise", "quick", "bite-sized"].includes(word.toLowerCase())) {
+                    noteStyle.length = "short";
+                } else if (["detailed", "comprehensive", "thorough", "in-depth", "expansive"].includes(word.toLowerCase())) {
+                    noteStyle.length = "long";
+                }
+                
+                // Approach-related words
+                if (["analytical", "logical", "data-driven", "research", "reasoned"].includes(word.toLowerCase())) {
+                    noteStyle.approach = "analytical";
+                } else if (["story", "narrative", "personal", "journey", "experience"].includes(word.toLowerCase())) {
+                    noteStyle.approach = "narrative";
+                } else if (["actionable", "practical", "useful", "tactical", "tips", "strategies"].includes(word.toLowerCase())) {
+                    noteStyle.approach = "actionable";
+                } else if (["emotional", "inspiring", "motivational", "moving", "powerful", "meaningful"].includes(word.toLowerCase())) {
+                    noteStyle.approach = "emotional";
+                }
+            });
             
-            const endings = [
-                `Join the conversation on ${topic} - I'd love to hear your thoughts.`,
-                `What's your take on ${topic}? Reply to share your perspective.`,
-                `Let me know if this ${quality1} perspective on ${topic} resonates with you.`
-            ];
+            // Generate content based on interpreted style
+            let intro, middle, bullets, ending;
             
-            return `${intros[variant - 1]}\n\n${middles[variant - 1]}\n\n• The ${quality1} nature of ${keyTopic} is often misunderstood\n• Why being ${quality2} about ${keyTopic} matters more than ever\n• How to approach ${keyTopic} in a more ${quality3} way\n\n${endings[variant - 1]}`;
+            // Generate intros based on tone and approach
+            if (noteStyle.tone === "assertive") {
+                intro = variant === 1 ? 
+                    `Let's cut to the chase about ${topic}.` : 
+                    variant === 2 ? 
+                    `Here's what everyone gets wrong about ${topic}.` : 
+                    `It's time to rethink everything you know about ${topic}.`;
+            } else if (noteStyle.tone === "reflective") {
+                intro = variant === 1 ? 
+                    `I've been contemplating ${topic} lately, and it's more nuanced than it appears.` : 
+                    variant === 2 ? 
+                    `${topic} raises some fascinating questions worth exploring.` : 
+                    `The deeper I dive into ${topic}, the more layers I discover.`;
+            } else if (noteStyle.tone === "conversational") {
+                intro = variant === 1 ? 
+                    `Hey friends, I've been thinking about ${topic} this week.` : 
+                    variant === 2 ? 
+                    `So, ${topic}... can we talk about this for a minute?` : 
+                    `I was chatting with a friend about ${topic} and wanted to share some thoughts.`;
+            } else {
+                intro = variant === 1 ? 
+                    `${topic} has become increasingly important in today's landscape.` : 
+                    variant === 2 ? 
+                    `There's been a lot of discussion around ${topic} recently.` : 
+                    `I'd like to share some perspectives on ${topic}.`;
+            }
+            
+            // Generate middle content based on approach
+            if (noteStyle.approach === "analytical") {
+                middle = `When we analyze ${topic} carefully, three key factors stand out:`;
+                bullets = `• The data shows a clear pattern in how ${keyTopic} is evolving\n• The underlying mechanisms of ${keyTopic} reveal surprising connections\n• Current trends suggest a significant shift in ${keyTopic} within the next year`;
+            } else if (noteStyle.approach === "narrative") {
+                middle = `My journey with ${topic} has taught me valuable lessons:`;
+                bullets = `• The first time I encountered ${keyTopic}, it changed my perspective entirely\n• Through years of experience, I've witnessed how ${keyTopic} transforms\n• A recent experience with ${keyTopic} solidified my understanding`;
+            } else if (noteStyle.approach === "actionable") {
+                middle = `Here are practical ways to approach ${topic}:`;
+                bullets = `• Start by reassessing your current understanding of ${keyTopic}\n• Implement this one change to see immediate improvements\n• Create a simple system to track and optimize your ${keyTopic} experience`;
+            } else if (noteStyle.approach === "emotional") {
+                middle = `${topic} touches on something deeply human:`;
+                bullets = `• The profound impact of ${keyTopic} on our sense of identity\n• Why ${keyTopic} resonates so strongly with our core values\n• The transformative potential of embracing ${keyTopic} fully`;
+            } else {
+                middle = `Here are some key insights about ${topic}:`;
+                bullets = `• ${keyTopic} is evolving in ways many haven't noticed\n• The conventional wisdom about ${keyTopic} misses crucial aspects\n• A fresh perspective on ${keyTopic} reveals new opportunities`;
+            }
+            
+            // Generate ending based on length preference
+            if (noteStyle.length === "short") {
+                ending = `What's your take? (Keeping it brief today - more next week!)`;
+            } else if (noteStyle.length === "long") {
+                ending = `I'll be expanding on these ideas in coming notes, particularly focusing on how ${keyTopic} intersects with broader trends. If you've had experiences or insights about this topic, I'd love to hear them in the replies.`;
+            } else {
+                ending = `I'm curious about your thoughts on ${topic}. Drop a reply and let's discuss.`;
+            }
+            
+            // Assemble the complete note with appropriate spacing based on length
+            const spacing = noteStyle.length === "short" ? "\n" : "\n\n";
+            return `${intro}${spacing}${middle}${spacing}${bullets}${spacing}${ending}`;
         }
         
         function displayResults(ideas) {
